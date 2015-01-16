@@ -6,6 +6,7 @@ var defaultConfig = require(__dirname + '/partyplayConfigDefaults.js');
 var config = _.defaults(userConfig, defaultConfig);
 
 var socket = require('socket.io-client')(config.hostname + ':' + config.port);
+var spawn = null;
 
 socket.on('playback', function(data) {
     console.log('playback event');
@@ -15,7 +16,10 @@ socket.on('playback', function(data) {
     if(data.position)
         seek = data.position / 1000;
 
-    var spawn = Spawn({
+    if(spawn) {
+        spawn.kill();
+    }
+    spawn = Spawn({
         cmd: 'ffplay',
         args: ['-ss', seek, '-nodisp',
             config.hostname + ':' + config.port + '/song/' + data.backendName + '/' + data.songID + '.' + data.format
