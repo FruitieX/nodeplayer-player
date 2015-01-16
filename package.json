@@ -9,7 +9,6 @@
   "author": "FruitieX",
   "license": "MIT",
   "dependencies": {
-    "node-mplayer": "0.0.3",
     "node-spawn": "0.0.7",
     "socket.io-client": "^1.2.1",
     "underscore": "^1.7.0"
