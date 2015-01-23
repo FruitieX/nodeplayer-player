@@ -9,6 +9,11 @@ var socket = require('socket.io-client')(config.hostname + ':' + config.port);
 var spawn = null;
 
 socket.on('playback', function(data) {
+    if(spawn)
+        spawn.kill();
+    if(!data)
+        return;
+
     console.log('playback event');
     console.log(data);
 
@@ -16,9 +21,6 @@ socket.on('playback', function(data) {
     if(data.position)
         seek = data.position / 1000;
 
-    if(spawn) {
-        spawn.kill();
-    }
     spawn = Spawn({
         cmd: 'ffplay',
         args: ['-ss', seek, '-nodisp',
