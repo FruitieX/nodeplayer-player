@@ -14,9 +14,6 @@ socket.on('playback', function(data) {
     if(!data)
         return;
 
-    console.log('playback event');
-    console.log(data);
-
     var seek = 0;
     if(data.position)
         seek = data.position / 1000;
@@ -29,7 +26,7 @@ socket.on('playback', function(data) {
         onStderr: function() {}
     });
     spawn.start();
-    console.log(config.hostname + ':' + config.port + '/song/' + data.backendName + '/' + data.songID + '.' + data.format);
+    console.log('playing: ' + config.hostname + ':' + config.port + '/song/' + data.backendName + '/' + data.songID + '.' + data.format);
 });
 
 socket.on('connect', function() {
