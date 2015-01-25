@@ -1,11 +1,19 @@
 var _ = require('underscore');
 var Spawn = require('node-spawn');
+var fs = require('fs');
 
 var userConfig = require(process.env.HOME + '/.partyplayConfig.js');
 var defaultConfig = require(__dirname + '/partyplayConfigDefaults.js');
 var config = _.defaults(userConfig, defaultConfig);
 
-var socket = require('socket.io-client')(config.hostname + ':' + config.port);
+var tlsOpts = {
+    key: fs.readFileSync(config.tlsKey),
+    cert: fs.readFileSync(config.tlsCert),
+    ca: fs.readFileSync(config.tlsCa),
+    rejectUnauthorized: config.rejectUnauthorized
+};
+
+var socket = require('socket.io-client')(config.hostname + ':' + config.port, tlsOpts);
 var spawn = null;
 
 socket.on('playback', function(data) {
@@ -21,6 +29,10 @@ socket.on('playback', function(data) {
     spawn = Spawn({
         cmd: 'ffplay',
         args: ['-ss', seek, '-nodisp',
+            '-cert_file', config.tlsCert,
+            '-ca_file', config.tlsCa,
+            '-key_file', config.tlsKey,
+            '-tls_verify', (config.rejectUnauthorized ? 1 : 0),
             config.hostname + ':' + config.port + '/song/' + data.backendName + '/' + data.songID + '.' + data.format
         ],
         onStderr: function() {}
