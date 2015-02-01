@@ -26,15 +26,24 @@ socket.on('playback', function(data) {
     if(data.position)
         seek = data.position / 1000;
 
-    spawn = Spawn({
-        cmd: 'ffplay',
-        args: ['-ss', seek, '-nodisp',
+    var args = [];
+    if(config.tls) {
+        args = ['-ss', seek, '-nodisp',
             '-cert_file', config.tlsCert,
             '-ca_file', config.tlsCa,
             '-key_file', config.tlsKey,
             '-tls_verify', (config.rejectUnauthorized ? 1 : 0),
             config.hostname + ':' + config.port + '/song/' + data.backendName + '/' + data.songID + '.' + data.format
-        ],
+        ]
+    } else {
+        args = ['-ss', seek, '-nodisp',
+            config.hostname + ':' + config.port + '/song/' + data.backendName + '/' + data.songID + '.' + data.format
+        ]
+    }
+
+    spawn = Spawn({
+        cmd: 'ffplay',
+        args: args,
         onStderr: function() {}
     });
     spawn.start();
