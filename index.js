@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var _ = require('underscore');
 var Spawn = require('node-spawn');
 var fs = require('fs');
