@@ -21,7 +21,7 @@ var spawn = null;
 socket.on('playback', function(data) {
     if(spawn)
         spawn.kill();
-    if(!data)
+    if(!data || !data.playbackStart)
         return;
 
     var seek = 0;
