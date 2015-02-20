@@ -4,9 +4,7 @@ var _ = require('underscore');
 var Spawn = require('node-spawn');
 var fs = require('fs');
 
-var userConfig = require(process.env.HOME + '/.nodeplayer-config.js');
-var defaultConfig = require('nodeplayer-defaults');
-var config = _.defaults(userConfig, defaultConfig);
+var config = require('nodeplayer-defaults')(console);
 
 var tlsOpts = {
     key: fs.readFileSync(config.tlsKey),
