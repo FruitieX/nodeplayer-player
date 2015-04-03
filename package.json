@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "node-spawn": "0.0.7",
-    "nodeplayer-defaults": "*",
+    "nodeplayer-config": "*",
     "socket.io-client": "^1.3.2",
     "underscore": "^1.7.0"
   }

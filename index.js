@@ -4,16 +4,18 @@ var _ = require('underscore');
 var Spawn = require('node-spawn');
 var fs = require('fs');
 
-var config = require('nodeplayer-defaults')(console);
+var config = require('nodeplayer-config').getConfig();
+var expressConfig = require('nodeplayer-config').getConfig('plugin-express');
+var httpAuthConfig = require('nodeplayer-config').getConfig('plugin-httpauth');
 
 var tlsOpts = {
-    key: fs.readFileSync(config.tlsKey),
-    cert: fs.readFileSync(config.tlsCert),
-    ca: fs.readFileSync(config.tlsCa),
-    rejectUnauthorized: config.rejectUnauthorized
+    key: fs.readFileSync(expressConfig.key),
+    cert: fs.readFileSync(expressConfig.cert),
+    ca: fs.readFileSync(expressConfig.ca),
+    rejectUnauthorized: expressConfig.rejectUnauthorized
 };
 
-var socket = require('socket.io-client')((config.tls ? 'https://' : 'http://') + config.hostname + ':' + config.port, tlsOpts);
+var socket = require('socket.io-client')((expressConfig.tls ? 'https://' : 'http://') + config.hostname + ':' + expressConfig.port, tlsOpts);
 var spawn = null;
 
 socket.on('playback', function(data) {
@@ -40,11 +42,11 @@ socket.on('playback', function(data) {
 
     // url
     args.push(config.tls ? 'https://' : 'http://');
-    if(config.plugins.indexOf('httpAuth') !== -1) {
-        args[args.length - 1] += config.username + ':' + config.password + '@';
+    if(config.plugins.indexOf('httpauth') !== -1) {
+        args[args.length - 1] += httpAuthConfig.username + ':' + httpAuthConfig.password + '@';
     }
 
-    args[args.length - 1] += (config.hostname + ':' + config.port + '/song/' + data.backendName + '/' + data.songID + '.' + data.format);
+    args[args.length - 1] += (config.hostname + ':' + expressConfig.port + '/song/' + data.backendName + '/' + data.songID + '.' + data.format);
 
     spawn = Spawn({
         cmd: 'ffplay',
@@ -53,7 +55,7 @@ socket.on('playback', function(data) {
     });
     spawn.start();
 
-    console.log('playing: ' + config.hostname + ':' + config.port + '/song/' + data.backendName + '/' + data.songID + '.' + data.format);
+    console.log('playing: ' + args[args.length - 1]);
 });
 
 socket.on('connect', function() {
